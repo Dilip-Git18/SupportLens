@@ -1,13 +1,12 @@
 import * as mediasoup from 'mediasoup';
-import { Worker, Router, WebRtcTransport, Producer, Consumer } from 'mediasoup/node/lib/types';
 import { config } from '../config/mediasoupConfig';
 
 class MediasoupManager {
-  private worker: Worker | null = null;
-  private routers = new Map<string, Router>();
-  private transports = new Map<string, WebRtcTransport>();
-  private producers = new Map<string, Producer>();
-  private consumers = new Map<string, Consumer>();
+  private worker: mediasoup.types.Worker | null = null;
+  private routers = new Map<string, mediasoup.types.Router>();
+  private transports = new Map<string, mediasoup.types.WebRtcTransport>();
+  private producers = new Map<string, mediasoup.types.Producer>();
+  private consumers = new Map<string, mediasoup.types.Consumer>();
 
   // Maps sessionId -> Set of active producer IDs
   private sessionProducers = new Map<string, Set<string>>();
@@ -37,7 +36,7 @@ class MediasoupManager {
   }
 
   // Get or create router for a specific support session
-  public async getOrCreateRouter(sessionId: string): Promise<Router> {
+  public async getOrCreateRouter(sessionId: string): Promise<mediasoup.types.Router> {
     if (!this.worker) {
       throw new Error('Mediasoup Worker not initialized');
     }
@@ -58,7 +57,7 @@ class MediasoupManager {
 
   // Create WebRtcTransport on a session router
   public async createTransport(sessionId: string): Promise<{
-    transport: WebRtcTransport;
+    transport: mediasoup.types.WebRtcTransport;
     params: any;
   }> {
     const router = await this.getOrCreateRouter(sessionId);
@@ -68,7 +67,7 @@ class MediasoupManager {
     this.transports.set(transport.id, transport);
     this.sessionTransports.get(sessionId)?.add(transport.id);
 
-    transport.on('dtlsstatechange', (dtlsState) => {
+    transport.on('dtlsstatechange', (dtlsState: any) => {
       if (dtlsState === 'closed') {
         this.closeTransport(transport.id);
       }
@@ -103,7 +102,7 @@ class MediasoupManager {
     transportId: string,
     kind: 'audio' | 'video',
     rtpParameters: any
-  ): Promise<Producer> {
+  ): Promise<mediasoup.types.Producer> {
     const transport = this.transports.get(transportId);
     if (!transport) {
       throw new Error(`Transport not found: ${transportId}`);
@@ -129,7 +128,7 @@ class MediasoupManager {
     transportId: string,
     producerId: string,
     rtpCapabilities: any
-  ): Promise<{ consumer: Consumer; params: any }> {
+  ): Promise<{ consumer: mediasoup.types.Consumer; params: any }> {
     const router = await this.getOrCreateRouter(sessionId);
     const transport = this.transports.get(transportId);
 

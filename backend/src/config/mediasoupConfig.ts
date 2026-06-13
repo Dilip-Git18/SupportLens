@@ -1,9 +1,9 @@
-import { RtpCodecCapability, WorkerLogLevel, WorkerLogTag } from 'mediasoup/node/lib/types';
+import * as mediasoup from 'mediasoup';
 
 export const config = {
   // Mediasoup Worker settings
   worker: {
-    logLevel: 'warn' as WorkerLogLevel,
+    logLevel: 'warn' as mediasoup.types.WorkerLogLevel,
     logTags: [
       'info',
       'ice',
@@ -11,7 +11,7 @@ export const config = {
       'rtp',
       'srtp',
       'rtcp',
-    ] as WorkerLogTag[],
+    ] as mediasoup.types.WorkerLogTag[],
     rtcMinPort: parseInt(process.env.MIN_PORT || '20000', 10),
     rtcMaxPort: parseInt(process.env.MAX_PORT || '20200', 10),
   },
@@ -33,7 +33,7 @@ export const config = {
           'x-google-start-bitrate': 1000,
         },
       },
-    ] as RtpCodecCapability[],
+    ] as mediasoup.types.RtpCodecCapability[],
   },
 
   // WebRtcTransport settings
