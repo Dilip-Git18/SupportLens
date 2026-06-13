@@ -156,7 +156,9 @@ export default function SessionRoom({ params }: { params: Promise<{ token: strin
       }
 
       // Initialize Socket.IO connection
-      const socket = io('http://localhost:5001');
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
+      const socketUrl = apiBaseUrl.replace(/\/api$/, '');
+      const socket = io(socketUrl);
       socketRef.current = socket;
 
       socket.on('connect', () => {
@@ -777,7 +779,7 @@ export default function SessionRoom({ params }: { params: Promise<{ token: strin
                           <Download className="h-4 w-4 text-indigo-400 shrink-0 mt-0.5" />
                           <div className="overflow-hidden">
                             <a
-                              href={`http://localhost:5001${m.fileUrl}`}
+                              href={`${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api').replace(/\/api$/, '')}${m.fileUrl}`}
                               target="_blank"
                               rel="noreferrer"
                               className="text-xs font-semibold text-indigo-300 hover:underline truncate block"
